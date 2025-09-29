@@ -9,19 +9,27 @@
       Title="Вход в систему">
 
     <Grid Background="White">
-        <Rectangle Fill="#FFEEEEEE" HorizontalAlignment="Center" Height="323" Stroke="Black" VerticalAlignment="Center" Width="292"/>
-        
-        <Label Content="Введите ник:" Margin="263,85,310,338"/>
-        <TextBox x:Name="NicknameBox" HorizontalAlignment="Left" Margin="269,117,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
-        
-        <Label Content="Введите IP:" Margin="263,141,310,282"/>
-        <TextBox x:Name="IPAdressBox" HorizontalAlignment="Left" Margin="269,173,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
-        
-        <Label Content="Введите порт:" Margin="263,198,316,225"/>
-        <TextBox x:Name="PortBox" HorizontalAlignment="Left" Margin="269,230,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
-        
-        <Button x:Name="ConnectButton" Content="Connect" HorizontalAlignment="Left" Margin="269,330,0,0" VerticalAlignment="Top" Height="32" Width="168" Click="ConnectButton_Click"/>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="48"/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="#FFEEEEEE" HorizontalAlignment="Center" Height="323" Stroke="Black" VerticalAlignment="Center" Width="292" Grid.RowSpan="2"/>
+            <StackPanel Orientation="Vertical" Margin="8">
+                <Label Content="Введите ник:"  Padding="0,16,8,8"/>
+                <TextBox x:Name="NicknameBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
 
+                <Label Content="Введите IP:"  Padding="0,16,8,8"/>
+                <TextBox x:Name="IPAdressBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
+
+                <Label Content="Введите порт:" Padding="0,16,8,8"/>
+                <TextBox x:Name="PortBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="221"/>
+
+
+            </StackPanel>
+            <Button Grid.Row="1" x:Name="ConnectButton" Content="Connect" HorizontalAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Height="32" Width="168" Click="ConnectButton_Click"/>
+        </Grid>
+        
 
     </Grid>
 </Page>
