@@ -55,7 +55,7 @@ namespace ChatAppWpf.Pages
         private void SendButtonClick(object sender, RoutedEventArgs e)
         {
             ChatClient.Instance.SendMessage(messageTextBox.Text);
-            ApplyMessage(msg);
+            ApplyMessage(messageTextBox.Text);
         }
     }
 }
