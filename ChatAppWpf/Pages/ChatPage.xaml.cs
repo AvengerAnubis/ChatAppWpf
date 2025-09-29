@@ -24,8 +24,6 @@ namespace ChatAppWpf.Pages
         /// <summary>
         /// Текст чата
         /// </summary>
-        private string _chatContent = string.Empty;
-
         public ChatPage()
         {
             InitializeComponent();
@@ -45,8 +43,7 @@ namespace ChatAppWpf.Pages
         /// <param name="msg">Сообщение</param>
         private void ApplyMessage(string msg)
         {
-            _chatContent += $"{msg}\n";
-            chatTextBlock.Text = msg;
+            chatStackPanel.Children.Add(new TextBlock() { Text = msg, TextWrapping = TextWrapping.Wrap });
         }
         /// <summary>
         /// Метод, вызываемый при клике на кнопку "Отправить" (>)

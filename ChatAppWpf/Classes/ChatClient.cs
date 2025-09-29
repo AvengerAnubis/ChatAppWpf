@@ -52,7 +52,7 @@ namespace ChatAppWpf
             {
                 byte[] receiveBytes = (await _client.ReceiveAsync()).Buffer;
 
-                string returnData = Encoding.ASCII.GetString(receiveBytes);
+                string returnData = Encoding.UTF8.GetString(receiveBytes);
 
                 MessageReceived?.Invoke(returnData);
             }
@@ -62,7 +62,7 @@ namespace ChatAppWpf
         {
             if (_endPoint != null && _isRunning)
             {
-                byte[] sendBytes = Encoding.ASCII.GetBytes(message);
+                byte[] sendBytes = Encoding.UTF8.GetBytes(message);
 
                 _client.Send(sendBytes, sendBytes.Length, _endPoint);
             }
