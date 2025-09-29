@@ -24,5 +24,13 @@ namespace ChatAppWpf.Pages
         {
             InitializeComponent();
         }
+
+        private void ConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ChatClient.Instance.Connect(IPAdressBox.Text, int.Parse(PortBox.Text)))
+            {
+                MainWindow.Instance.MainFrame.Navigate(new ChatPage());
+            }
+        }
     }
 }
