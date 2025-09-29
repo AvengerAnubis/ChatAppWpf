@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using ChatAppWpf.Pages;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,19 @@ namespace ChatAppWpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; private set; }
+        public Frame MainFrame {
+            get
+            {
+                return mainFrame;
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
+            Instance = this;
+
+            MainFrame.Navigate(new LoginPage());
         }
     }
 }
