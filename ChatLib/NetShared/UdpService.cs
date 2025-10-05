@@ -11,7 +11,6 @@ namespace ChatLib.NetShared
 	public class UdpService : IDisposable
 	{
 		protected UdpClient udpClient = new();
-        protected readonly List<IPEndPoint> clients = new();
         /// <summary>
         /// Получает или задает порт клиента
         /// </summary>
@@ -31,25 +30,7 @@ namespace ChatLib.NetShared
         }
 
 		/// <summary>
-		/// Зарегистрировать эндпоинт для рассылки
-		/// </summary>
-		/// <param name="endPoint">IP эндпоинт</param>
-		public void RegisterEndpoint(IPEndPoint endPoint)
-		{
-            clients.Remove(endPoint);
-			clients.Add(endPoint);
-        }
-        /// <summary>
-        /// Исключить эндпоинт из рассылки
-        /// </summary>
-        /// <param name="endPoint">IP эндпоинт</param>
-        public void UnregisterEndpoint(IPEndPoint endPoint)
-		{
-			clients.Remove(endPoint);
-		}
-
-		/// <summary>
-		/// Отправка пакета на IP эндпоинт
+		/// Отправка пакета <paramref name="packet"/> на <paramref name="remoteEndPoint"/>
 		/// </summary>
 		/// <param name="packet">Пакет</param>
 		/// <param name="remoteEndPoint">IP эндпоинт</param>
@@ -60,7 +41,7 @@ namespace ChatLib.NetShared
 			await udpClient.SendAsync(data, data.Length, remoteEndPoint);
 		}
 		/// <summary>
-		/// Отправка пакета на указанные IP и порт
+		/// Отправка пакета <paramref name="packet"/> на указанные <paramref name="ip"/> и <paramref name="port"/>
 		/// </summary>
 		/// <param name="packet">Пакет</param>
 		/// <param name="ip">IP</param>
@@ -72,14 +53,15 @@ namespace ChatLib.NetShared
 			await SendPacketAsync(packet, endPoint);
 		}
 
-		/// <summary>
-		/// Отправка пакета на все зарегистрированные эндпоинты
-		/// </summary>
-		/// <param name="packet">Пакет</param>
-		/// <returns></returns>
-        public async Task BroadcastPacketAsync(PacketBase packet)
+        /// <summary>
+        /// Отправка пакета <paramref name="packet"/> на все эндпоинты из списка <paramref name="endPoints"/>
+        /// </summary>
+        /// <param name="packet">Пакет</param>
+        /// <param name="endPoints">Эндпоинты, на которые будут рассылаться пакеты</param>
+        /// <returns></returns>
+        public async Task BroadcastPacketAsync(PacketBase packet, IEnumerable<IPEndPoint> endPoints)
         {
-            foreach (var endPoint in clients)
+            foreach (var endPoint in endPoints)
             {
                 await SendPacketAsync(packet, endPoint);
             }
