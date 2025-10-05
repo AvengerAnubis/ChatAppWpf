@@ -45,7 +45,7 @@ namespace ChatLib.NetShared
         /// <param name="endPoint">IP эндпоинт</param>
         public void UnregisterEndpoint(IPEndPoint endPoint)
 		{
-			clients.Add(endPoint);
+			clients.Remove(endPoint);
 		}
 
 		/// <summary>
@@ -119,8 +119,11 @@ namespace ChatLib.NetShared
 
 		public void Dispose()
 		{
-			getUdpPacketsCts.Cancel();
-			udpClient.Close();
-		}
+            if (!getUdpPacketsCts.IsCancellationRequested)
+                getUdpPacketsCts.Cancel();
+
+            udpClient.Close();
+            udpClient.Dispose();
+        }
 	}
 }
