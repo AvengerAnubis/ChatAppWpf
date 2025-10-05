@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ChatLib.NetShared
 {
-    public abstract class UdpPacketBase
+    public abstract class PacketBase
     {
         public static readonly JsonSerializerOptions DefaultJsonOptions = new()
         {
@@ -49,12 +49,20 @@ namespace ChatLib.NetShared
             => Encoding.UTF8.GetBytes(JsonDataString);
         //JSON Десериализация
         public static T? FromJson<T>(string json)
-            where T : UdpPacketBase
+            where T : PacketBase
             => JsonSerializer.Deserialize<T>(json, DefaultJsonOptions);
-        public static UdpPacketBase? FromBytes(byte[] data)
+        public static PacketBase? FromBytes(byte[] data)
         {
             string json = Encoding.UTF8.GetString(data);
-            using var doc = JsonDocument.Parse(json);
+            JsonDocument doc;
+            try
+            {
+                doc = JsonDocument.Parse(json);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
             if (!doc.RootElement.TryGetProperty(nameof(PacketTypeFullName), out var typeProp))
                 return null;
@@ -63,11 +71,18 @@ namespace ChatLib.NetShared
             if (typeName is null)
                 return null;
 
+            // Проверка корретности типа объекта
             Type? type = Type.GetType(typeName);
-            if (type == null)
+            if (type is null)
+                return null;
+            if (!type.IsAssignableFrom(typeof(PacketBase)))
+                return null;
+            if (type.Assembly != typeof(PacketBase).Assembly)
                 return null;
 
-            return (UdpPacketBase?)JsonSerializer.Deserialize(json, type, DefaultJsonOptions);
+            if (JsonSerializer.Deserialize(json, type, DefaultJsonOptions) is PacketBase packetBase)
+                return packetBase;
+            return null;
         }
     }
 }
