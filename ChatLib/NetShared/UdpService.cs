@@ -54,7 +54,7 @@ namespace ChatLib.NetShared
 		/// <param name="packet">Пакет</param>
 		/// <param name="remoteEndPoint">IP эндпоинт</param>
 		/// <returns></returns>
-		public async Task SendPacketAsync(UdpPacketBase packet, IPEndPoint remoteEndPoint)
+		public async Task SendPacketAsync(PacketBase packet, IPEndPoint remoteEndPoint)
 		{
 			byte[] data = packet.JsonDataBytes;
 			await udpClient.SendAsync(data, data.Length, remoteEndPoint);
@@ -66,7 +66,7 @@ namespace ChatLib.NetShared
 		/// <param name="ip">IP</param>
 		/// <param name="port">Порт</param>
 		/// <returns></returns>
-		public async Task SendPacketAsync(UdpPacketBase packet, string ip, int port)
+		public async Task SendPacketAsync(PacketBase packet, string ip, int port)
 		{
 			var endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
 			await SendPacketAsync(packet, endPoint);
@@ -77,7 +77,7 @@ namespace ChatLib.NetShared
 		/// </summary>
 		/// <param name="packet">Пакет</param>
 		/// <returns></returns>
-        public async Task BroadcastPacketAsync(UdpPacketBase packet)
+        public async Task BroadcastPacketAsync(PacketBase packet)
         {
             foreach (var endPoint in clients)
             {
@@ -90,8 +90,8 @@ namespace ChatLib.NetShared
 		/// Асинхронно возвращает полученные пакеты в порядке их поступления
 		/// </summary>
 		/// <returns>Пакеты, полученные по UDP, 
-		/// тип которых определяется по свойству <see cref="UdpPacketBase.PacketTypeFullName"/></returns>
-		public async IAsyncEnumerable<UdpPacketBase> GetUdpPackets()
+		/// тип которых определяется по свойству <see cref="PacketBase.PacketTypeFullName"/></returns>
+		public async IAsyncEnumerable<PacketBase> GetUdpPackets()
 		{
 			while (true)
 			{
@@ -107,7 +107,7 @@ namespace ChatLib.NetShared
 					yield break;
 				}
 				// Получаем объект пакета из датаграммы
-				UdpPacketBase? packet = UdpPacketBase.FromBytes(result.Buffer);
+				PacketBase? packet = PacketBase.FromBytes(result.Buffer);
 				if (packet is null)
 					continue;
 				//Сохраняем отправителя
@@ -117,11 +117,15 @@ namespace ChatLib.NetShared
 			}
 		}
 
+		/// <summary>
+		/// Освобождение ресурсов
+		/// </summary>
 		public void Dispose()
 		{
+			// Закрываем прослушку портов
             if (!getUdpPacketsCts.IsCancellationRequested)
                 getUdpPacketsCts.Cancel();
-
+			// Закрываем UDP клиент
             udpClient.Close();
             udpClient.Dispose();
         }
