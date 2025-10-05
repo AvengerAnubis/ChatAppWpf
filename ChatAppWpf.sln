@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatAppWpf", "ChatAppWpf\ChatAppWpf.csproj", "{BC6856FB-E640-44F0-B8B7-F89172F6A5F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatLib", "ChatLib\ChatLib.csproj", "{3153A72B-9B15-46B1-9B09-7A1E830971B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{8539C0F1-6BAF-479B-B260-8C82693222CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +21,16 @@ Global
 		{BC6856FB-E640-44F0-B8B7-F89172F6A5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC6856FB-E640-44F0-B8B7-F89172F6A5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC6856FB-E640-44F0-B8B7-F89172F6A5F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3153A72B-9B15-46B1-9B09-7A1E830971B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3153A72B-9B15-46B1-9B09-7A1E830971B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3153A72B-9B15-46B1-9B09-7A1E830971B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3153A72B-9B15-46B1-9B09-7A1E830971B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3153A72B-9B15-46B1-9B09-7A1E830971B9} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32E06F2C-E7E4-40EC-8EF7-6C1B79F39848}
