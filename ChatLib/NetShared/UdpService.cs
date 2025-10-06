@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,8 @@ namespace ChatLib.NetShared
 {
 	public class UdpService : IDisposable
 	{
-		protected UdpClient udpClient = new();
+        #region UdpClient
+        protected readonly UdpClient udpClient = new();
         /// <summary>
         /// Получает или задает порт клиента
         /// </summary>
@@ -28,14 +30,16 @@ namespace ChatLib.NetShared
                 udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, value));
             }
         }
+        #endregion
 
-		/// <summary>
-		/// Отправка пакета <paramref name="packet"/> на <paramref name="remoteEndPoint"/>
-		/// </summary>
-		/// <param name="packet">Пакет</param>
-		/// <param name="remoteEndPoint">IP эндпоинт</param>
-		/// <returns></returns>
-		public async Task SendPacketAsync(PacketBase packet, IPEndPoint remoteEndPoint)
+        #region Отправка пакетов
+        /// <summary>
+        /// Отправка пакета <paramref name="packet"/> на <paramref name="remoteEndPoint"/>
+        /// </summary>
+        /// <param name="packet">Пакет</param>
+        /// <param name="remoteEndPoint">IP эндпоинт</param>
+        /// <returns></returns>
+        public async Task SendPacketAsync(PacketBase packet, IPEndPoint remoteEndPoint)
 		{
 			byte[] data = packet.JsonDataBytes;
 			await udpClient.SendAsync(data, data.Length, remoteEndPoint);
@@ -66,50 +70,69 @@ namespace ChatLib.NetShared
                 await SendPacketAsync(packet, endPoint);
             }
         }
+        #endregion
 
-        CancellationTokenSource getUdpPacketsCts = new CancellationTokenSource();
-		/// <summary>
-		/// Асинхронно возвращает полученные пакеты в порядке их поступления
-		/// </summary>
-		/// <returns>Пакеты, полученные по UDP, 
-		/// тип которых определяется по свойству <see cref="PacketBase.PacketTypeFullName"/></returns>
-		public async IAsyncEnumerable<PacketBase> GetUdpPackets()
+        #region Получение пакетов
+		public event EventHandler<PacketBase>? PacketReceived;
+
+        protected readonly CancellationTokenSource beginListeningCts = new();
+		public async Task BeginListening(CancellationToken? token = null)
 		{
-			while (true)
-			{
-				UdpReceiveResult result;
-				try
-				{
-					// Получаем датаграмму асинхронно
-					result = await udpClient.ReceiveAsync(getUdpPacketsCts.Token);
-				}
-				// Отслеживаем отмену операции
-				catch (OperationCanceledException) 
-				{ 
-					yield break;
-				}
-				// Получаем объект пакета из датаграммы
-				PacketBase? packet = PacketBase.FromBytes(result.Buffer);
-				if (packet is null)
-					continue;
-				//Сохраняем отправителя
-				packet.SenderEndPoint = result.RemoteEndPoint;
+            token?.Register(() => beginListeningCts.Cancel());
+            while (!beginListeningCts.IsCancellationRequested)
+            {
+                UdpReceiveResult result;
+                try
+                {
+                    // Получаем датаграмму асинхронно
+                    result = await udpClient.ReceiveAsync(beginListeningCts.Token);
+                }
+                // Отслеживаем отмену операции
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                // Получаем объект пакета из датаграммы
+                PacketBase? packet = PacketBase.FromBytes(result.Buffer);
+                if (packet is null)
+                    continue;
+                //Сохраняем отправителя
+                packet.SenderEndPoint = result.RemoteEndPoint;
 
-				yield return packet;
-			}
-		}
+                PacketReceived?.Invoke(this, packet);
+            }
+        }
+        #endregion
 
+        #region Освобождение ресурсов Dispose
+        protected bool isDisposed = false;
 		/// <summary>
 		/// Освобождение ресурсов
 		/// </summary>
 		public void Dispose()
 		{
-			// Закрываем прослушку портов
-            if (!getUdpPacketsCts.IsCancellationRequested)
-                getUdpPacketsCts.Cancel();
-			// Закрываем UDP клиент
-            udpClient.Close();
-            udpClient.Dispose();
+			Dispose(true);
+			GC.SuppressFinalize(this);
         }
-	}
+        /// <summary>
+        /// Освобождение ресурсов
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+		{
+			if (!isDisposed)
+			{
+				isDisposed = true;
+				if (disposing)
+				{
+				    // Закрываем прослушку портов
+				    if (!beginListeningCts.IsCancellationRequested)
+				        beginListeningCts.Cancel();
+				    // Закрываем UDP клиент
+				    udpClient.Close();
+				    udpClient.Dispose();
+				}
+			}
+		}
+        #endregion
+    }
 }
