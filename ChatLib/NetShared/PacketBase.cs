@@ -41,7 +41,7 @@ namespace ChatLib.NetShared
 
         //Некоторые доп. данные пакета, не нуждающиеся в сериализации
         [JsonIgnore]
-        public IPEndPoint SenderEndPoint { get; set; }
+        public IPEndPoint? SenderEndPoint { get; set; }
         //JSON Сериализация
         public string JsonDataString
             => JsonSerializer.Serialize(this);
